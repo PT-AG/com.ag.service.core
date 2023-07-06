@@ -116,6 +116,28 @@ namespace Com.Ambassador.Service.Core.WebApi.Controllers.v1.BasicControllers
             }
         }
 
+        [HttpGet("single-by-code-and-date")]
+        public IActionResult GetSingleByCodeAndDate(string filters = "{}")
+        {
+            try
+            {
+                GarmentDetailCurrency Data = service.GetSingleByCodeAndDate(filters);
+
+                Dictionary<string, object> Result =
+                     new ResultFormatter(ApiVersion, General.OK_STATUS_CODE, General.OK_MESSAGE)
+                     .Ok(Data);
+
+                return Ok(Result);
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
         [HttpGet("single-by-code-date")]
         public IActionResult GetSingleByCodeDate([FromQuery] string code, [FromQuery] string stringDate)
         {
