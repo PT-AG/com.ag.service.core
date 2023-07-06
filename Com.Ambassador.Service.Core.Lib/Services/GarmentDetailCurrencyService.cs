@@ -175,6 +175,36 @@ namespace Com.Ambassador.Service.Core.Lib.Services
             return data;
         }
 
+        public GarmentDetailCurrency GetSingleByCodeAndDate(string filters)
+        {
+            IQueryable<GarmentDetailCurrency> Query = DbSet;
+
+            List<string> SearchAttributes = new List<string>()
+            {
+                "Code", "Date"
+            };
+
+            Dictionary<string, object> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filters);
+            Query = QueryHelper<GarmentDetailCurrency>.Filter(Query, FilterDictionary);
+
+            //Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
+            //Query = QueryHelper<GarmentDetailCurrency>.Order(Query, OrderDictionary);
+
+            Query = Query.Select(s => new GarmentDetailCurrency
+            {
+                Id = s.Id,
+                Code = s.Code,
+                Date = s.Date,
+                Rate = s.Rate,
+            });
+
+            //Pageable<GarmentDetailCurrency> pageable = new Pageable<GarmentDetailCurrency>(Query, page - 1, size);
+            //List<GarmentDetailCurrency> Data = pageable.Data.ToList();
+
+            //int TotalData = pageable.TotalCount;
+            return Query.FirstOrDefault();
+        }
+
         public GarmentDetailCurrency GetRatePEB(DateTimeOffset date)
         {
             var currency = DbSet.Where(entity => entity.Code == "USD" && entity.Date <= date).ToList().Select(o => new { Diffs = Math.Abs((o.Date.Date - date.DateTime.Date).Days), o.Date, o.Id }).OrderBy(o => o.Diffs).FirstOrDefault();
